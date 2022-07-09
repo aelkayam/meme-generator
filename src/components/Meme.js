@@ -1,23 +1,31 @@
-import React, { useState } from "react";
-import memesData from "../memesData";
+import React, { useState, useEffect } from "react";
 
 export default function Meme() {
-  const [allMemes] = useState(memesData);
-  const memesArr = allMemes.data.memes;
+  // all memes from API
+  let [allMemes, setAllMemes] = useState([]);
 
   // current meme showing
   const [currentMeme, setCurrentMeme] = useState({
     topText: "",
     bottomText: "",
-    randomMeme: memesArr[0].url,
+    randomMeme: "https://i.imgflip.com/2fm6x.jpg",
   });
+
+  // API call
+  useEffect(() => {
+    fetch("https://api.imgflip.com/get_memes")
+      .then((res) => res.json())
+      .then((obj) => setAllMemes(obj.data.memes));
+  }, []);
+
+  console.log("rendered");
 
   // get new meme template from the top 100 memes on ImgFlip
   function generateMemeImage() {
-    const randMeme = Math.floor(Math.random() * memesArr.length);
+    const randMeme = Math.floor(Math.random() * allMemes.length);
     setCurrentMeme((prevMeme) => ({
       ...prevMeme,
-      randomMeme: memesArr[randMeme].url,
+      randomMeme: allMemes[randMeme].url,
     }));
   }
 
